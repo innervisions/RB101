@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 def prompt(message)
   puts "=> #{message}"
 end
@@ -33,13 +31,21 @@ loop do
   loop do
     prompt("What's the first number?:")
     first_number = gets.chomp
-    valid_number?(first_number) ? break : prompt('That doesn\'t look like a valid integer.')
+    if valid_number?(first_number)
+      break
+    else
+      prompt('That doesn\'t look like a valid integer.')
+    end
   end
 
   loop do
     prompt("What's the second number?: ")
     second_number = gets.chomp
-    valid_number?(second_number) ? break : prompt('That doesn\'t look like a valid integer.')
+    if valid_number?(second_number)
+      break
+    else
+      prompt('That doesn\'t look like a valid integer.')
+    end
   end
 
   operator_prompt = <<-MSG
@@ -53,7 +59,11 @@ loop do
   operator = nil
   loop do
     operator = gets.chomp
-    %w[1 2 3 4].include?(operator) ? break : prompt('Must choose 1, 2, 3, or 4.')
+    if %w[1 2 3 4].include?(operator)
+      break
+    else
+      prompt('Must choose 1, 2, 3, or 4.')
+    end
   end
   prompt("#{operation_to_message(operator)} the two numbers...")
   result = case operator
@@ -67,7 +77,8 @@ loop do
              first_number.to_f / second_number.to_i
            end
   prompt("The result is #{result}.")
-  prompt('Would you like to perform another calculation? (Y to calculate again)')
+  prompt('Would you like to perform another calculation?
+   (Y to calculate again)')
   break unless gets.chomp.downcase.start_with?('y')
 
   prompt('Thank you for using the calculator! Bye bye.')
