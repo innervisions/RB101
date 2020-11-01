@@ -2,21 +2,34 @@ def prompt(message)
   puts "=> #{message}"
 end
 
+def integer?(number)
+  Integer(number)
+rescue StandardError
+  false
+end
+
+def float?(number)
+  Float(number)
+rescue StandardError
+  false
+end
+
 def valid_number?(number)
-  number.to_i != 0
+  integer?(number) || float?(number)
 end
 
 def operation_to_message(operation)
-  case operation
-  when '1'
-    'Adding'
-  when '2'
-    'Subtracting'
-  when '3'
-    'Multiplying'
-  when '4'
-    'Dividing'
-  end
+  result = case operation
+           when '1'
+             'Adding'
+           when '2'
+             'Subtracting'
+           when '3'
+             'Multiplying'
+           when '4'
+             'Dividing'
+           end
+  result
 end
 
 name = ''
@@ -74,7 +87,7 @@ loop do
            when '3'
              first_number.to_i * second_number.to_i
            when '4'
-             first_number.to_f / second_number.to_i
+             first_number.to_f / second_number.to_f
            end
   prompt("The result is #{result}.")
   prompt('Would you like to perform another calculation?
