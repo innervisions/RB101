@@ -84,29 +84,19 @@ def get_duration_in_months
 end
 
 def calculate_monthly_interest(apr)
-  apr.to_f / 12 / 100
+  apr / 12 / 100
 end
 
 def calculate_monthly_payment(loan_amount, monthly_interest, duration)
   loan_amount * (monthly_interest / (1 - (1 + monthly_interest)**(-duration)))
 end
 
-def print_result(loan_amount, monthly_interest, duration, monthly_payment)
+def display_result(loan_amount, monthly_interest, duration, monthly_payment)
   prompt <<-MSG
-  For a loan of $#{loan_amount}, to be paid over #{duration} months
-  at a monthly interest rate of #{(monthly_interest * 100).round(3)}%, your monthly
-  payment wil be $#{monthly_payment.round(2)}.
-  MSG
-end
-
-def display_result(loan_amount_string, apr_string, duration)
-  loan_amount = loan_amount_string.to_f
-  monthly_interest = calculate_monthly_interest(apr_string)
-  monthly_payment = calculate_monthly_payment(loan_amount, monthly_interest,
-                                              duration)
-
-  print_result(loan_amount_string, monthly_interest,
-               duration, monthly_payment)
+    For a loan of $#{loan_amount}, to be paid over #{duration} months
+    at a monthly interest rate of #{(monthly_interest * 100).round(3)}%, your monthly
+    payment wil be $#{monthly_payment.round(2)}.
+    MSG
 end
 
 def run_again?
@@ -129,8 +119,11 @@ loop do
   loan_amount = get_amount
   apr = get_apr
   duration = get_duration_in_months
+  monthly_interest = calculate_monthly_interest(apr.to_f)
+  monthly_payment = calculate_monthly_payment(loan_amount.to_f, monthly_interest,
+                                              duration)
   clear_screen
-  display_result(loan_amount, apr, duration)
+  display_result(loan_amount, monthly_interest, duration, monthly_payment)
   break unless run_again?
 end
 display_goodbye
