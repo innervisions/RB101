@@ -29,7 +29,7 @@ def get_amount
 end
 
 def valid_apr?(input)
-  (/\A\d+\z/.match(input) || /\A\d+.\d+\z/.match(input)) && input.to_f > 0.0
+  (/\A\d+\z/.match(input) || /\A\d+.\d+\z/.match(input))
 end
 
 def get_apr
@@ -119,8 +119,8 @@ loop do
   apr = get_apr
   duration = get_duration_in_months
   monthly_interest = calculate_monthly_interest(apr.to_f)
-  monthly_payment = calculate_monthly_payment(loan_amount.to_f, monthly_interest,
-                                              duration)
+  monthly_payment = calculate_monthly_payment(loan_amount.to_f,
+                                              monthly_interest, duration)
   clear_screen
   display_result(loan_amount, monthly_interest, duration, monthly_payment)
   break unless run_again?

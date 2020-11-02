@@ -10,7 +10,7 @@ get_years: |
   (If your loan is for 10 years and 9 months, you would input '10' here.)
 invalid_years: "That is not a valid number of years."
 get_months:  " years and how many months?"
-get_months_one_year: "1 year and how many months?"
+get_months_one_year: "1 year and how many months? (0-11)"
 invalid_months: "That is not a valid number of months."
 run_again: "Would you like to perform another calculation? (Y/N)"
 goodbye: |
