@@ -100,7 +100,6 @@ def display_result(loan_amount, monthly_interest, duration, monthly_payment)
 end
 
 def run_again?
-  input = nil
   loop do
     prompt(MESSAGES['run_again'])
     input = gets.chomp.upcase
