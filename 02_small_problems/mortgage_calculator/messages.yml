@@ -1,0 +1,19 @@
+welcome: |
+  Welcome to the Mortgage Calculator!
+  ---------------------------------------
+get_amount: "How much are you borrowing, in USD?"
+invalid_amount: "That's not a valid amount."
+get_apr: "What is the Annual Percentage Rate (APR) of your loan?"
+invalid_apr: "That's not a valid APR."
+get_years: |
+  What is the duration of your loan, in years?
+  (If your loan is for 10 years and 9 months, you would input '10' here.)
+invalid_years: "That is not a valid number of years."
+get_months:  " years and how many months?"
+get_months_one_year: "1 year and how many months?"
+invalid_months: "That is not a valid number of months."
+run_again: "Would you like to perform another calculation? (Y/N)"
+goodbye: |
+  Thank you for using the Mortgage Calculator.
+  See you next time!
+  -----------------------------------------------
