@@ -40,7 +40,7 @@ def valid_choice(choice)
   false
 end
 
-def unabbrevriate(choice)
+def unabbreviate(choice)
   VALID_ABBREVIATIONS.each_with_index do |abbreviation, idx|
     return VALID_CHOICES[idx] if choice.start_with?(abbreviation)
   end
@@ -54,7 +54,7 @@ def get_choice
     break if valid_choice(choice)
     prompt("That's not a valid choice.")
   end
-  unabbrevriate(choice)
+  unabbreviate(choice)
 end
 
 def get_computer_choice
