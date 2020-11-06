@@ -80,7 +80,7 @@ def display_round_result(name, choice, computer_choice, winner)
   end
 end
 
-def check_for_winner(name, choice, computer_choice)
+def get_winner(name, choice, computer_choice)
   winner = nil
   if win?(choice, computer_choice)
     winner = name
@@ -102,7 +102,7 @@ def play_round(name, round, scores)
   display_round(round)
   choice = get_choice
   computer_choice = get_computer_choice
-  winner = check_for_winner(name, choice, computer_choice)
+  winner = get_winner(name, choice, computer_choice)
   update_scores(name, winner, scores)
   display_round_result(name, choice, computer_choice, winner)
 end
@@ -114,6 +114,13 @@ def display_match_result(name, grand_winner, scores)
   prompt("#{grand_winner} wins the match!")
 end
 
+def get_grand_winner(name, scores)
+  grand_winner = nil
+  grand_winner = name if scores[:player] == WINS_REQUIRED
+  grand_winner = 'Computer' if scores[:computer] == WINS_REQUIRED
+  grand_winner
+end
+
 def play_match(name)
   scores = { player: 0, computer: 0 }
   round = 1
@@ -121,8 +128,7 @@ def play_match(name)
 
   until grand_winner
     play_round(name, round, scores)
-    grand_winner = name if scores[:player] == WINS_REQUIRED
-    grand_winner = 'Computer' if scores[:computer] == WINS_REQUIRED
+    grand_winner = get_grand_winner(name, scores)
     round += 1
   end
   display_match_result(name, grand_winner, scores)
