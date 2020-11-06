@@ -120,9 +120,9 @@ end
 def play_again?
   loop do
     prompt("Would you like to play again? (Y/N)")
-    input = gets.chomp.upcase
-    return true if %w(YES Y).include?(input)
-    return false if %w(NO N).include?(input)
+    input = gets.chomp.downcase
+    return true if input.start_with?('y')
+    return false if input.start_with?('n')
   end
 end
 
