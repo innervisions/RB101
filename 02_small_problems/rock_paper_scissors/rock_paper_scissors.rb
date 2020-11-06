@@ -89,8 +89,7 @@ def play_round(name, round, scores)
   if win?(choice, computer_choice)
     scores[:player] += 1
     winner = name
-  end
-  if win?(computer_choice, choice)
+  elsif win?(computer_choice, choice)
     scores[:computer] += 1
     winner = 'Computer'
   end
