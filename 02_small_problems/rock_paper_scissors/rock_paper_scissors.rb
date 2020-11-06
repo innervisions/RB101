@@ -80,19 +80,30 @@ def display_round_result(name, choice, computer_choice, winner)
   end
 end
 
+def check_for_winner(name, choice, computer_choice)
+  winner = nil
+  if win?(choice, computer_choice)
+    winner = name
+  elsif win?(computer_choice, choice)
+    winner = 'Computer'
+  end
+  winner
+end
+
+def update_scores(name, winner, scores)
+  if winner == name
+    scores[:player] += 1
+  elsif winner == 'Computer'
+    scores[:computer] += 1
+  end
+end
+
 def play_round(name, round, scores)
   display_round(round)
   choice = get_choice
   computer_choice = get_computer_choice
-  winner = nil
-
-  if win?(choice, computer_choice)
-    scores[:player] += 1
-    winner = name
-  elsif win?(computer_choice, choice)
-    scores[:computer] += 1
-    winner = 'Computer'
-  end
+  winner = check_for_winner(name, choice, computer_choice)
+  update_scores(name, winner, scores)
   display_round_result(name, choice, computer_choice, winner)
 end
 
