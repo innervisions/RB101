@@ -23,12 +23,17 @@ def display_banner
   puts '-' * 50
 end
 
+def valid_name?(name)
+  /\A\S+\z/.match(name) || /\A\S+\s{1}\S+\z/.match(name)
+end
+
 def get_name
   name = ''
   loop do
     prompt('What is your name?')
     name = gets.chomp
-    break if name.length > 0
+    break if valid_name?(name)
+    prompt("That's not a valid name.")
   end
   name
 end
@@ -72,6 +77,7 @@ def display_round(round)
 end
 
 def display_round_result(name, choice, computer_choice, winner)
+  clear_screen
   prompt("#{name} chose #{choice}. Computer chose #{computer_choice}.")
   if winner
     prompt("#{winner} won.")
@@ -125,7 +131,7 @@ def play_match(name)
   scores = { player: 0, computer: 0 }
   round = 1
   grand_winner = nil
-
+  prompt("Win #{WINS_REQUIRED} rounds to win the match.")
   until grand_winner
     play_round(name, round, scores)
     grand_winner = get_grand_winner(name, scores)
