@@ -4,7 +4,7 @@ COMPUTER_MARKER = 'O'
 WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9],
                  [1, 4, 7], [2, 5, 8], [3, 6, 9],
                  [1, 5, 9], [3, 5, 7]]
-FIRST_PLAYER = 'choose'
+FIRST_PLAYER = 'choose' # 'player', 'computer', or 'choose'
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -155,8 +155,6 @@ def determine_winner(board, scores)
   else
     prompt "It's a tie!"
   end
-  prompt 'Press ENTER to continue.'
-  gets
 end
 
 def play_round(round, scores)
@@ -174,6 +172,8 @@ def play_round(round, scores)
   display_scores(round, scores)
   display_board(board)
   determine_winner(board, scores)
+  prompt 'Press ENTER to continue.'
+  gets
 end
 
 def play_match
