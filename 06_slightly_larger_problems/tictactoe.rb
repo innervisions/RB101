@@ -5,6 +5,7 @@ WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9],
                  [1, 4, 7], [2, 5, 8], [3, 6, 9],
                  [1, 5, 9], [3, 5, 7]]
 FIRST_PLAYER = 'choose' # 'player', 'computer', or 'choose'
+WINS_REQUIRED = 3
 
 def prompt(msg)
   puts "=> #{msg}"
@@ -39,7 +40,7 @@ def display_scores(round, scores)
   puts '*' * 10
   puts "Player: #{scores['Player']} "
   puts "Computer: #{scores['Computer']}"
-  puts 'Win 5 rounds to win the match.'
+  puts "Win #{WINS_REQUIRED} rounds to win the match."
   puts '-' * 40
 end
 
@@ -181,12 +182,12 @@ def play_match
   round = 1
   loop do
     play_round(round, scores)
-    break if scores.values.include?(5)
+    break if scores.values.include?(WINS_REQUIRED)
     round += 1
   end
   prompt "Player has won #{scores['Player']}. " \
         "Computer has won #{scores['Computer']}."
-  prompt "#{scores.key(5)} has won the match!"
+  prompt "#{scores.key(WINS_REQUIRED)} has won the match!"
 end
 
 # MAIN ###################
