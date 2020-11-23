@@ -32,15 +32,17 @@ end
 
 def display_hands(player_hand, dealer_hand, hole_hidden = false)
   clear_screen
+  puts 'Twenty-One'
+  puts '*' * 11
   dealer_ranks = ranks(dealer_hand)
   player_ranks = ranks(player_hand)
   if hole_hidden
     puts "Dealer has #{dealer_ranks[0]} and an unknown card."
   else
-    puts "Dealer has #{joinand(dealer_ranks)}."
+    puts "Dealer has #{joinand(dealer_ranks)}. (Total: #{total(dealer_hand)})"
   end
-  puts "You have #{joinand(player_ranks)}."
-  puts '-' * 40
+  puts "You have #{joinand(player_ranks)}. (Total: #{total(player_hand)})"
+  puts '-' * 35
 end
 
 def player_choice
@@ -69,44 +71,53 @@ def total(hand)
   sum
 end
 
-def display_results(player_hand, dealer_hand)
-  prompt "Dealer's hand is worth #{total(dealer_hand)}."
-  prompt "Your hand is worth #{total(player_hand)}."
-  prompt case total(player_hand) <=> total(dealer_hand)
-         when 1 then "You win!"
-         when -1 then "Dealer wins."
-         else "It's a push."
-         end
+def bust?(hand)
+  total(hand) > 21
 end
-# MAIN #####
-deck = initialize_deck
-player_hand = [deck.pop, deck.pop]
-dealer_hand = [deck.pop, deck.pop]
-bust = false
-loop do
-  display_hands(player_hand, dealer_hand, true)
-  choice = player_choice
-  break if choice == 'stay'
-  player_hand << deck.pop
-  if total(player_hand) > 21
-    bust = true
-    break
+
+def result(player_hand, dealer_hand)
+  case total(player_hand) <=> total(dealer_hand)
+  when 1 then "You win!"
+  when -1 then "Dealer wins."
+  else "It's a push."
   end
 end
 
-if bust
-  display_hands(player_hand, dealer_hand, true)
-  prompt "You bust! Dealer wins."
-else
-  loop do
-    display_hands(player_hand, dealer_hand)
-    break if total(dealer_hand) >= 17
-    dealer_hand << deck.pop
-    bust = true if total(dealer_hand) > 21
-  end
-  if bust
-    prompt 'Dealer busts! You win!'
-  else
-    display_results(player_hand, dealer_hand)
-  end
+def display_result(player_hand, dealer_hand)
+  prompt "Dealer's hand is worth #{total(dealer_hand)}."
+  prompt "Your hand is worth #{total(player_hand)}."
+  prompt result(player_hand, dealer_hand)
 end
+# MAIN #####
+loop do
+  deck = initialize_deck
+  player_hand = [deck.pop, deck.pop]
+  dealer_hand = [deck.pop, deck.pop]
+
+  loop do # Player Turn
+    display_hands(player_hand, dealer_hand, true)
+    choice = player_choice
+    break if choice == 'stay'
+    player_hand << deck.pop
+    break if bust?(player_hand)
+  end
+
+  if bust?(player_hand)
+    display_hands(player_hand, dealer_hand, true)
+    prompt "You bust! Dealer wins."
+  else
+    loop do # If player didn't bust, dealer takes turn.
+      display_hands(player_hand, dealer_hand)
+      break if total(dealer_hand) >= 17
+      dealer_hand << deck.pop
+    end
+    if bust?(dealer_hand)
+      prompt 'Dealer busts! You win!'
+    else
+      display_result(player_hand, dealer_hand)
+    end
+  end
+  prompt 'Would you like to play again? (y/n):'
+  break unless gets.chomp.downcase.start_with?('y')
+end
+prompt 'Thank you for playing Twenty-One!'
