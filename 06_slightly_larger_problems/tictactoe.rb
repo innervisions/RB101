@@ -61,24 +61,24 @@ def joinor(arr, punctuation = ', ', conjunction = 'or')
   end
 end
 
-def find_critical_square(line, board, marker)
+def find_critical_square_in_line(line, board, marker)
   if board.values_at(*line).count(marker) == 2
     board.select { |k, v| line.include?(k) && v == INITIAL_MARKER }.keys.first
   end
 end
 
-def critical_square(brd)
+def find_critical_square(brd, marker)
   square = nil
-  WINNING_LINES.each do |line| # offensive
-    square = find_critical_square(line, brd, COMPUTER_MARKER)
+  WINNING_LINES.each do |line|
+    square = find_critical_square_in_line(line, brd, marker)
     break if square
   end
-  if !square
-    WINNING_LINES.each do |line| # defensive
-      square = find_critical_square(line, brd, PLAYER_MARKER)
-      break if square
-    end
-  end
+  square
+end
+
+def critical_square(brd)
+  square = find_critical_square(brd, COMPUTER_MARKER) # offensive
+  square ||= find_critical_square(brd, PLAYER_MARKER) # defensive
   square
 end
 
@@ -95,9 +95,7 @@ end
 
 def computer_places_piece!(brd)
   square = critical_square(brd)
-  if !square
-    square = empty_squares(brd).include?(5) ? 5 : empty_squares(brd).sample
-  end
+  square ||= empty_squares(brd).include?(5) ? 5 : empty_squares(brd).sample
   brd[square] = COMPUTER_MARKER
 end
 
@@ -117,11 +115,13 @@ end
 def choose_first_player
   input = nil
   loop do
-    prompt 'Who would you like to go first? (Player, Computer, or Random):'
+    prompt "Who would you like to go first?\n(P)layer, (C)omputer, or (R)andom"
     input = gets.chomp.downcase
-    return 'Player' if 'player'.start_with?(input)
-    return 'Computer' if 'computer'.start_with?(input)
-    return ['Computer', 'Player'].sample if 'random'.start_with?(input)
+    unless input.empty?
+      return 'Player' if 'player'.start_with?(input)
+      return 'Computer' if 'computer'.start_with?(input)
+      return ['Computer', 'Player'].sample if 'random'.start_with?(input)
+    end
     prompt "That's not a valid choice."
   end
 end
@@ -190,10 +190,17 @@ def play_match
   prompt "#{scores.key(WINS_REQUIRED)} has won the match!"
 end
 
+def play_again?
+  loop do
+    prompt 'Would you like to play again? (y/n):'
+    input = gets.chomp.downcase
+    return true if input.start_with?('y')
+    return false if input.start_with?('n')
+  end
+end
 # MAIN ###################
 loop do
   play_match
-  prompt 'Would you like to play again? (y/n):'
-  break unless gets.chomp.downcase.start_with?('y')
+  break unless play_again?
 end
 prompt 'Thank you for playing Tic Tac Toe!'
