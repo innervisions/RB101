@@ -181,6 +181,7 @@ def play_match
     puts "\nPress ENTER to continue."
     gets
   end
+  puts
   prompt "Player has won #{scores[:player]}. " \
         "Dealer has won #{scores[:dealer]}."
   prompt "#{scores.key(WINS_REQUIRED).to_s.capitalize} wins the match!"
