@@ -103,7 +103,7 @@ end
 
 def announce_winner(winner)
   case winner
-  when :player then 'You won!'
+  when :player then 'You win!'
   when :dealer then 'Dealer wins.'
   else              "It's a push."
   end
