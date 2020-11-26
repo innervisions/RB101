@@ -73,8 +73,10 @@ def player_choice
   loop do
     prompt 'Would you like to hit or stay?:'
     choice = gets.chomp.downcase
-    return 'hit' if 'hit'.start_with?(choice)
-    return 'stay' if 'stay'.start_with?(choice)
+    unless choice.empty?
+      return 'hit' if 'hit'.start_with?(choice)
+      return 'stay' if 'stay'.start_with?(choice)
+    end
     prompt "That's not a valid choice."
   end
 end
@@ -121,8 +123,10 @@ def play_again?
   loop do
     prompt 'Would you like to play again? (y/n):'
     input = gets.chomp.downcase
-    return true if input.start_with?('y')
-    return false if input.start_with?('n')
+    unless input.empty?
+      return true if input.start_with?('y')
+      return false if input.start_with?('n')
+    end
   end
 end
 
