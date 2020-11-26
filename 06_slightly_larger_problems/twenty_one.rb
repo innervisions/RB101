@@ -1,5 +1,7 @@
-SUITS = %w(S C H D)
-RANKS = %w(Ace 2 3 4 5 6 7 8 9 10 Jack Queen King)
+SUITS = %w(♠ ♣ ♥ ♦)
+RANKS = %w(A 2 3 4 5 6 7 8 9 10 J Q K)
+CEILING = 21
+WINS_REQUIRED = 5
 
 def clear_screen
   system('clear') || system('clr')
@@ -9,10 +11,20 @@ def prompt(msg)
   puts "=> #{msg}"
 end
 
+def point_value(rank)
+  if rank == 'A'
+    11
+  elsif rank.to_i == 0
+    10
+  else
+    rank.to_i
+  end
+end
+
 def initialize_deck
   SUITS.each_with_object([]) do |suit, deck|
     RANKS.each do |rank|
-      deck << { suit: suit, rank: rank }
+      deck << { suit: suit, rank: rank, points: point_value(rank) }
     end
   end.shuffle
 end
@@ -26,22 +38,34 @@ def joinand(arr)
   end
 end
 
-def ranks(cards) # takes array of cards, returns array of ranks
-  cards.map { |card| card[:rank] }
+def format_hand(hand)
+  joinand(hand.map { |card| "#{card[:rank]} #{card[:suit]}" })
 end
 
-def display_hands(player_hand, dealer_hand, hole_hidden = false)
+def display_banner(round, scores)
   clear_screen
   puts 'Twenty-One'
   puts '*' * 11
-  dealer_ranks = ranks(dealer_hand)
-  player_ranks = ranks(player_hand)
+  puts "Round #{round}\n"
+  puts "Player: #{scores[:player]} Dealer: #{scores[:dealer]}"
+  puts "Win #{WINS_REQUIRED} hands to win the match."
+  puts '-' * 35
+  puts
+end
+
+def display_hands(player_hand, dealer_hand, round,
+                  scores, hole_hidden = false)
+
+  display_banner(round, scores)
   if hole_hidden
-    puts "Dealer has #{dealer_ranks[0]} and an unknown card."
+    puts "Dealer has #{dealer_hand[0][:rank]} #{dealer_hand[0][:suit]}" \
+      " and an unknown card."
   else
-    puts "Dealer has #{joinand(dealer_ranks)}. (Total: #{total(dealer_hand)})"
+    puts "Dealer has #{format_hand(dealer_hand)}. " \
+      "(Total: #{total(dealer_hand)})"
   end
-  puts "You have #{joinand(player_ranks)}. (Total: #{total(player_hand)})"
+  puts "You have #{format_hand(player_hand)}. " \
+    "(Total: #{total(player_hand)})"
   puts '-' * 35
 end
 
@@ -56,68 +80,108 @@ def player_choice
 end
 
 def total(hand)
-  hand_ranks = ranks(hand)
-  sum = 0
-  hand_ranks.each do |rank|
-    sum += if rank == 'Ace'
-             11
-           elsif rank.to_i == 0
-             10
-           else
-             rank.to_i
-           end
-  end
-  hand_ranks.count('Ace').times { sum -= 10 if sum > 21 }
+  hand_points = hand.map { |card| card[:points] }
+  sum = hand_points.sum
+  hand_points.count(11).times { sum -= 10 if sum > CEILING }
+  # counts the number of Aces (11 points)
   sum
 end
 
 def bust?(hand)
-  total(hand) > 21
+  total(hand) > CEILING
 end
 
 def result(player_hand, dealer_hand)
   case total(player_hand) <=> total(dealer_hand)
-  when 1 then "You win!"
-  when -1 then "Dealer wins."
-  else "It's a push."
+  when 1 then :player
+  when -1 then :dealer
+  else :push
   end
 end
 
-def display_result(player_hand, dealer_hand)
+def announce_winner(winner)
+  case winner
+  when :player then 'You won!'
+  when :dealer then 'Dealer wins.'
+  else              "It's a push."
+  end
+end
+
+def display_result(player_hand, dealer_hand, winner)
   prompt "Dealer's hand is worth #{total(dealer_hand)}."
   prompt "Your hand is worth #{total(player_hand)}."
-  prompt result(player_hand, dealer_hand)
+  prompt announce_winner(winner)
 end
-# MAIN #####
-loop do
-  deck = initialize_deck
-  player_hand = [deck.pop, deck.pop]
-  dealer_hand = [deck.pop, deck.pop]
 
-  loop do # Player Turn
-    display_hands(player_hand, dealer_hand, true)
+def update_scores(scores, winner)
+  scores[winner] += 1 if [:player, :dealer].include?(winner)
+end
+
+def play_again?
+  prompt 'Would you like to play again? (y/n):'
+  gets.chomp.downcase.start_with?('y')
+end
+
+def player_turn(deck, player_hand, dealer_hand, round, scores)
+  loop do
+    display_hands(player_hand, dealer_hand, round, scores, true)
     choice = player_choice
     break if choice == 'stay'
     player_hand << deck.pop
     break if bust?(player_hand)
   end
+  display_hands(player_hand, dealer_hand, round, scores, true)
+end
 
+def dealer_turn(deck, player_hand, dealer_hand, round, scores)
+  loop do
+    display_hands(player_hand, dealer_hand, round, scores)
+    break if total(dealer_hand) >= 17
+    dealer_hand << deck.pop
+  end
+end
+
+# rubocop:disable Metrics/MethodLength
+def play_round(round, scores)
+  deck = initialize_deck
+  player_hand = [deck.pop, deck.pop]
+  dealer_hand = [deck.pop, deck.pop]
+  player_turn(deck, player_hand, dealer_hand, round, scores)
   if bust?(player_hand)
-    display_hands(player_hand, dealer_hand, true)
     prompt "You bust! Dealer wins."
+    update_scores(scores, :dealer)
   else
-    loop do # If player didn't bust, dealer takes turn.
-      display_hands(player_hand, dealer_hand)
-      break if total(dealer_hand) >= 17
-      dealer_hand << deck.pop
-    end
+    dealer_turn(deck, player_hand, dealer_hand, round, scores)
     if bust?(dealer_hand)
       prompt 'Dealer busts! You win!'
+      update_scores(scores, :player)
     else
-      display_result(player_hand, dealer_hand)
+      winner = result(player_hand, dealer_hand)
+      display_result(player_hand, dealer_hand, winner)
+      update_scores(scores, winner)
     end
   end
-  prompt 'Would you like to play again? (y/n):'
-  break unless gets.chomp.downcase.start_with?('y')
+end
+# rubocop:enable Metrics/MethodLength
+
+def play_match
+  scores = { player: 0, dealer: 0 }
+  round = 1
+  loop do
+    play_round(round, scores)
+    break if scores.values.include?(WINS_REQUIRED)
+    round += 1
+    puts "\nPress ENTER to continue."
+    gets
+  end
+  prompt "Player has won #{scores[:player]}. " \
+        "Dealer has won #{scores[:dealer]}."
+  prompt "#{scores.key(WINS_REQUIRED).to_s.capitalize} wins the match!"
+  puts
+end
+# MAIN #####
+loop do
+  play_match
+  break unless play_again?
 end
 prompt 'Thank you for playing Twenty-One!'
