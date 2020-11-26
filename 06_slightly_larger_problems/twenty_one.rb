@@ -118,8 +118,12 @@ def update_scores(scores, winner)
 end
 
 def play_again?
-  prompt 'Would you like to play again? (y/n):'
-  gets.chomp.downcase.start_with?('y')
+  loop do
+    prompt 'Would you like to play again? (y/n):'
+    input = gets.chomp.downcase
+    return true if input.start_with?('y')
+    return false if input.start_with?('n')
+  end
 end
 
 def player_turn(deck, player_hand, dealer_hand, round, scores)
