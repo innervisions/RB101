@@ -143,8 +143,7 @@ end
 
 def dealer_turn(deck, player_hand, dealer_hand, round, scores)
   display_hands(player_hand, dealer_hand, round, scores)
-  loop do
-    break if total(dealer_hand) >= 17
+  until total(dealer_hand) >= 17
     dealer_hand << deck.pop
   end
   display_hands(player_hand, dealer_hand, round, scores)
