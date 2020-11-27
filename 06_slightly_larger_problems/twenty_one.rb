@@ -131,12 +131,12 @@ def play_again?
 end
 
 def player_turn(deck, player_hand, dealer_hand, round, scores)
-  loop do
+  until total(player_hand) == CEILING
     display_hands(player_hand, dealer_hand, round, scores, true)
     choice = player_choice
     break if choice == 'stay'
     player_hand << deck.pop
-    break if bust?(player_hand) || total(player_hand) == CEILING
+    break if bust?(player_hand)
   end
   display_hands(player_hand, dealer_hand, round, scores, true)
 end
