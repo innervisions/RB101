@@ -71,7 +71,7 @@ end
 
 def player_choice
   loop do
-    prompt 'Would you like to hit or stay?:'
+    prompt 'Would you like to (h)it or (s)tay?:'
     choice = gets.chomp.downcase
     unless choice.empty?
       return 'hit' if 'hit'.start_with?(choice)
@@ -136,7 +136,7 @@ def player_turn(deck, player_hand, dealer_hand, round, scores)
     choice = player_choice
     break if choice == 'stay'
     player_hand << deck.pop
-    break if bust?(player_hand)
+    break if bust?(player_hand) || total(player_hand) == CEILING
   end
   display_hands(player_hand, dealer_hand, round, scores, true)
 end
@@ -171,6 +171,14 @@ def play_round(round, scores)
 end
 # rubocop:enable Metrics/MethodLength
 
+def display_match_winner(scores)
+  puts
+  prompt "Player has won #{scores[:player]}. " \
+        "Dealer has won #{scores[:dealer]}."
+  prompt "#{scores.key(WINS_REQUIRED).to_s.capitalize} wins the match!"
+  puts
+end
+
 def play_match
   scores = { player: 0, dealer: 0 }
   round = 1
@@ -181,11 +189,7 @@ def play_match
     puts "\nPress ENTER to continue."
     gets
   end
-  puts
-  prompt "Player has won #{scores[:player]}. " \
-        "Dealer has won #{scores[:dealer]}."
-  prompt "#{scores.key(WINS_REQUIRED).to_s.capitalize} wins the match!"
-  puts
+  display_match_winner(scores)
 end
 # MAIN #####
 loop do
